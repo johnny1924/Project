@@ -1,7 +1,7 @@
 import axios from "axios"
 import React, { useState } from "react"
 
-const API_URL = "http://52.20.170.81:5000"
+const API_URL = "http://localhost:5001/api"
 
 function Check() {
   const [name, setName] = useState("")
