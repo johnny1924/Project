@@ -2,12 +2,10 @@ pipeline {
     agent any
     environment {
         REPO_URL='https://github.com/johnny1924/Project.git'
-        BACKEND_IMAGE_NAME='project-backend-k8s'
+        BACKEND_IMAGE_NAME='projectvt2'
         BACKEND_IMAGE_TAG="latest"
         REGISTRY='DockerHub'
         ACCOUNT_NAME='JSJProject'
-        NEW_FRONTEND_NAME=''
-        NEW_BACKEND_NAME=''
         DOCKERHUB_CREDENTIALS = credentials('DockerCred')
     }
     stages {
@@ -21,7 +19,7 @@ pipeline {
         stage('build backend') {
             steps {
                 sh 'docker ps'
-                sh 'docker build -t ${ACCOUNT_NAME}/${CONTAINER_NAME_BACKEND}:${BACKEND_IMAGE_TAG} .'
+                sh 'docker build -t jsjproject/projectvt2:latest .'
             }
         }
         stage('Login to DockerHub') {
@@ -34,7 +32,7 @@ pipeline {
         stage('push backend') {
             steps {
                 sh 'docker images'
-                sh 'docker push ${ACCOUNT_NAME}/${CONTAINER_NAME_BACKEND}:${BACKEND_IMAGE_TAG}'
+                sh 'docker push jsjproject/projectvt2:latest'
             }
         }
     }
