@@ -53,4 +53,4 @@ class User(Resource):
 
 
 # Configure SSL context
-ssl._create_default_https_context = ssl._create_stdlib_context
+#ssl._create_default_https_context = ssl._create_stdlib_context
