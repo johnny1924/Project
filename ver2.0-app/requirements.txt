@@ -4,4 +4,4 @@ flask_restful
 flask_cors
 requests
 bs4
-googlesearch
+google-search
