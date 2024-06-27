@@ -12,7 +12,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
-EXPOSE 5001
+EXPOSE 5000
 
 # Run app.py when the container launches
 CMD ["python3", "app.py"]
