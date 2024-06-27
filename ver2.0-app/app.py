@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_restful import Api
-from Resources.res import *
+from resources.res import *
 from flask_cors import CORS
 
 # import google_search
@@ -10,7 +10,7 @@ api = Api(app, prefix='/api')
 CORS(app)
 
 api.add_resource(Home, '/')
-api.add_resource(Check, '/check')
+api.add_resource(Check, '/chk')
 api.add_resource(User, '/<usr>')
 
 

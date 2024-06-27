@@ -4,7 +4,7 @@ from flask import redirect, render_template, request, url_for
 from bs4 import BeautifulSoup as bs
 import requests
 import ssl
-import google_search
+import googlesearch
 
 
 def validate_request(data, *required_keys):
@@ -31,7 +31,7 @@ class Check(Resource):
                 return {"error": f"Missing key: {missing_key}"}, 400
 
             user = data["nm"]
-            result = google_search.process_name(user)
+            result = googlesearch.process_name(user)
             return {"result": result}
         except Exception as e:
             print(f"An error occurred: {e}")
