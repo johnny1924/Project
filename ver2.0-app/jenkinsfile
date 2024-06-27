@@ -6,17 +6,24 @@ pipeline {
         BACKEND_IMAGE_TAG="latest"
         REGISTRY='DockerHub'
         ACCOUNT_NAME='JSJProject'
-        DOCKERHUB_CREDENTIALS = credentials('DockerCred')
     }
     stages {
-        stage('clone') {
+        stage('Clean Workspace') {
             steps {
+                // Clean the workspace
+                deleteDir()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                // Clone the repository
+                sh 'git clone $REPO_URL .'
                 sh 'git checkout main || git checkout -b main'
                 sh 'git pull origin main'
                 sh 'pwd'
             }
         }
-        stage('build backend') {
+        stage('Build Backend') {
             steps {
                 sh 'docker ps'
                 sh 'docker build -t jsjproject/projectvt2:latest .'
@@ -24,12 +31,12 @@ pipeline {
         }
         stage('Login to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'DockerCred', usernameVariable: 'dsoproject14@gmail.com', passwordVariable: 'Yh@#2323!')]) {
+                withCredentials([usernamePassword(credentialsId: 'DockerCred', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                     sh 'echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin'
                 }
             }
         }
-        stage('push backend') {
+        stage('Push Backend') {
             steps {
                 sh 'docker images'
                 sh 'docker push jsjproject/projectvt2:latest'
