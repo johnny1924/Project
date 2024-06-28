@@ -1,57 +1,76 @@
 pipeline {
     agent any
-    environment {
-        REPO_URL='https://github.com/johnny1924/Project.git'
-        BACKEND_IMAGE_NAME='projectvt2'
-        BACKEND_IMAGE_TAG="latest"
-        REGISTRY='DockerHub'
-        ACCOUNT_NAME='JSJProject'
-    }
+
     stages {
         stage('Clean Workspace') {
             steps {
-                // Clean the workspace
                 deleteDir()
             }
         }
+
         stage('Clone Repository') {
             steps {
-                // Clone the repository
-                sh 'git clone $REPO_URL .'
-                sh 'git checkout main || git checkout -b main'
-                sh 'git pull origin main'
-                sh 'pwd'
-            }
-        }
-        stage('Build Backend') {
-            steps {
-                sh 'docker ps'
-                sh 'docker build -t jsjproject/projectvt2:latest .'
-            }
-        }
-        stage('Login to DockerHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'DockerCred', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                    sh 'echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin'
+                script {
+                    git 'https://github.com/johnny1924/Project.git'
                 }
             }
         }
+
+        stage('Login to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    sh '''
+                    echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                script {
+                    sh '''
+                    docker run -d -p 5001:5001 --name my_flask_app jsjproject/projectvt2:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Get Host Public IP') {
+            steps {
+                script {
+                    env.HOST_PUBLIC_IP = sh(script: 'curl -s ifconfig.me', returnStdout: true).trim()
+                    echo "Host Public IP: ${env.HOST_PUBLIC_IP}"
+                }
+            }
+        }
+
+        stage('Access Container Service') {
+            steps {
+                script {
+                    def url = "http://${env.HOST_PUBLIC_IP}:5001"
+                    echo "Access the Flask app at: ${url}"
+                    // Here you can add steps to interact with the service, e.g., using curl or other tools.
+                }
+            }
+        }
+
         stage('Push Backend') {
             steps {
-                sh 'docker images'
-                sh 'docker push jsjproject/projectvt2:latest'
+                script {
+                    sh 'docker push jsjproject/projectvt2:latest'
+                }
             }
         }
     }
+
     post {
         always {
             echo '========always========'
-        }
-        success {
-            echo '========pipeline executed successfully ========'
         }
         failure {
             echo '========pipeline execution failed========'
         }
     }
 }
+
